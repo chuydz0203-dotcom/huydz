@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUST Admissions</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<script>
+const images = [
+  "20241208-cbo_5812.jpg",
+  "cbo_5734.jpg",
+  "co-so-vat-chat-dai-hoc-bach-khoa-ha-noi-1.jpg"
+];
+
+let current = 0;
+
+setInterval(() => {
+  current = (current + 1) % images.length;
+  document.getElementById("bannerImage").src = images[current];
+}, 3000); // 3 giây đổi ảnh
+</script>
+
+<body class="bg-gray-100 font-sans">
+
+<!-- LOGIN POPUP -->
+<div id="loginModal" class="fixed inset-0 z-50 bg-black/50 hidden flex items-center justify-center">
+  <div class="bg-white text-black p-6 rounded-xl w-[300px] relative">
+    <button onclick="closeLogin()" class="absolute top-2 right-2 text-xl">✖</button>
+
+    <h2 class="text-lg font-bold mb-4 text-center">ĐĂNG NHẬP</h2>
+
+    <input type="text" placeholder="Tài khoản" class="w-full border p-2 mb-3 rounded">
+    <input type="password" placeholder="Mật khẩu" class="w-full border p-2 mb-4 rounded">
+
+    <button class="w-full bg-red-600 text-white py-2 rounded">Đăng nhập</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="bg-white shadow px-6 py-3 flex items-center justify-between">
+
+  <!-- Logo -->
+  <div class="flex items-center gap-4">
+    <div class="w-12 h-12">
+      <img src="images.png" class="w-full h-full object-contain">
+    </div>
+    <div>
+      <h1 class="font-bold text-lg">THÔNG TIN TUYỂN SINH ĐẠI HỌC BÁCH KHOA HÀ NỘI</h1>
+      <p class="text-sm text-gray-600">HUST ADMISSIONS INFORMATION</p>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="flex items-center gap-3">
+    
+    <div class="relative">
+      <input 
+        id="searchInput"
+        type="text" 
+        placeholder="Tìm kiếm..." 
+        class="border px-4 py-2 rounded-l outline-none"
+        oninput="showSuggestions()"
+        onclick="showSuggestions()"
+      >
+
+      <!-- GỢI Ý -->
+      <div id="suggestBox" class="absolute bg-white text-black w-full mt-1 rounded shadow hidden z-50"></div>
+    </div>
+
+    <button onclick="focusSearch(); showSuggestions()" type="button" class="bg-red-600 text-white px-4 py-2 rounded-r">🔍</button>
+
+    <button onclick="openLogin()" class="border px-4 py-2 rounded-full">ĐĂNG NHẬP</button>
+    <button class="bg-gray-200 px-4 py-2 rounded-full">Đơn vị liên quan</button>
+  </div>
+
+</header>
+
+<!-- NAVBAR -->
+<nav class="bg-black text-white px-6 relative b-50">
+  <ul class="flex gap-8 py-4 text-sm font-semibold">
+
+    <!-- HOME -->
+    <li class="relative group">
+      <a href="#" class="text-white hover:text-red-500 transition duration-200">HOME</a>
+      <ul class="absolute left-0 mt-2 w-44 bg-white text-black rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition z-50">
+        <li class="px-4 py-2 hover:bg-gray-200">Trang chủ</li>
+        <li class="px-4 py-2 hover:bg-gray-200">Tin mới</li>
+      </ul>
+    </li>
+
+    <!-- HƯỚNG NGHIỆP -->
+    <li class="relative group">
+      <a href="#" class="text-white hover:text-red-500 transition duration-200">HƯỚNG NGHIỆP</a>
+      <ul class="absolute left-0 mt-2 w-52 bg-white text-black rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition z-50">
+        <li class="px-4 py-2 hover:bg-gray-200">Chọn ngành</li>
+        <li class="px-4 py-2 hover:bg-gray-200">Tư vấn nghề</li>
+      </ul>
+    </li>
+
+    <!-- ĐẠI HỌC -->
+    <li class="relative group">
+      <a href="#" class="text-white hover:text-red-500 transition duration-200">TUYỂN SINH ĐẠI HỌC</a>
+      <ul class="absolute left-0 mt-2 w-56 bg-white text-black rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition z-50">
+        <li class="px-4 py-2 hover:bg-gray-200">Phương thức xét tuyển</li>
+        <li class="px-4 py-2 hover:bg-gray-200">Chỉ tiêu</li>
+        <li class="px-4 py-2 hover:bg-gray-200">Điểm chuẩn</li>
+      </ul>
+    </li>
+
+    <!-- SAU ĐẠI HỌC -->
+    <li class="relative group">
+      <a href="#" class="text-white hover:text-red-500 transition duration-200">TUYỂN SINH SAU ĐẠI HỌC</a>
+      <ul class="absolute left-0 mt-2 w-52 bg-white text-black rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition z-50">
+        <li class="px-4 py-2 hover:bg-gray-200">Thạc sĩ</li>
+        <li class="px-4 py-2 hover:bg-gray-200">Tiến sĩ</li>
+      </ul>
+    </li>
+
+    <!-- INTERNATIONAL -->
+    <li class="relative group">
+      <a href="#" class="text-white hover:text-red-500 transition duration-200">INTERNATIONAL ADMISSIONS</a>
+      <ul class="absolute left-0 mt-2 w-52 bg-white text-black rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition z-50">
+        <li class="px-4 py-2 hover:bg-gray-200">Programs</li>
+        <li class="px-4 py-2 hover:bg-gray-200">Apply</li>
+      </ul>
+    </li>
+
+    <!-- HỌC PHÍ -->
+    <li class="relative group">
+      <a href="#" class="text-white hover:text-red-500 transition duration-200">HỌC PHÍ - HỌC BỔNG</a>
+      <ul class="absolute left-0 mt-2 w-56 bg-white text-black rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition z-50">
+        <li class="px-4 py-2 hover:bg-gray-200">Học phí</li>
+        <li class="px-4 py-2 hover:bg-gray-200">Học bổng</li>
+      </ul>
+    </li>
+
+    <!-- LIÊN HỆ -->
+    <li class="relative group">
+      <a href="#" class="text-white hover:text-red-500 transition duration-200">LIÊN HỆ</a>
+      <ul class="absolute left-0 mt-2 w-44 bg-white text-black rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition z-50">
+        <li class="px-4 py-2 hover:bg-gray-200">Email</li>
+        <li class="px-4 py-2 hover:bg-gray-200">Hotline</li>
+      </ul>
+    </li>
+
+  </ul>
+</nav>
+
+<!-- BANNER -->
+<section class="relative">
+  <img id="bannerImage"
+     src="20241208-cbo_5812.jpg"
+     class="w-full h-[500px] object-cover transition-all duration-700"/>
+
+  <div class="absolute bottom-10 right-10 bg-white/80 hover:bg-white hover:scale-105 transition-all duration-300 p-4 rounded-lg w-[350px] text-sm cursor-pointer">
+    Thông báo tuyển sinh trình độ Tiến sĩ năm 2026...
+  </div>
+</section>
+
+<!-- THANH ĐỎ -->
+<section class="bg-red-600 text-white grid grid-cols-1 md:grid-cols-3 text-center sticky top-0 z-50">
+
+  <!-- ITEM 1 -->
+  <a href="#" class="py-4 border-r border-red-500 hover:bg-red-700 transition block">
+    <p class="text-lg font-semibold">HƯỚNG DẪN</p>
+    <p class="font-bold">TRA CỨU</p>
+  </a>
+
+  <!-- ITEM 2 -->
+  <a href="tel:02438683408" class="py-4 border-r border-red-500 hover:bg-red-700 transition block">
+    <p class="text-lg font-semibold">ĐẠI HỌC</p>
+    <p class="text-yellow-300 font-bold">0243 868 3408</p>
+  </a>
+
+  <!-- ITEM 3 -->
+  <a href="tel:02438683408" class="py-4 hover:bg-red-700 transition block">
+    <p class="text-lg font-semibold">SAU ĐẠI HỌC</p>
+    <p class="text-yellow-300 font-bold">0243 868 3408</p>
+  </a>
+
+</section>
+<!-- NEWS SECTION -->
+<section class="max-w-6xl mx-auto py-10 px-6 grid md:grid-cols-2 gap-10">
+
+  <!-- ITEM 1 -->
+  <div class="flex gap-4 hover:bg-gray-100 p-3 rounded-lg transition">
+    <div class="overflow-hidden rounded">
+      <img src="co-so-vat-chat-dai-hoc-bach-khoa-ha-noi-1.jpg"
+           class="w-40 h-28 object-cover transition duration-300 hover:scale-110">
+    </div>
+    <div>
+      <h3 class="font-bold text-lg">
+        <a href="https://ts.hust.edu.vn/tin-tuc/quy-che-tuyen-sinh-dai-hoc-nam-2026" target="_blank" class="hover:text-red-600 transition">Quy chế tuyển sinh đại học năm 2026</a>
+      </h3>
+      <p class="text-gray-600 text-sm mt-2">
+        <a href="https://hust.edu.vn/phuong-thuc-xet-tuyen-2026" target="_blank" class="hover:text-red-600 transition">
+          Đại học Bách khoa Hà Nội công bố phương thức xét tuyển năm 2026
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ITEM 2 -->
+  <div class="flex gap-4 hover:bg-gray-100 p-3 rounded-lg transition">
+    <div class="overflow-hidden rounded">
+      <img src="hust-jpeg-1742902852-174290286-7369-4779-1742903313.jpg"
+           class="w-40 h-28 object-cover transition duration-300 hover:scale-110">
+    </div>
+    <div>
+      <h3 class="font-bold text-lg">
+        <a href="https://ts.hust.edu.vn/tin-tuc/cac-moc-nop-ho-so-thac-si-va-ky-su-chuyen-sau-2026" target="_blank" class="hover:text-red-600 transition">
+          Các mốc nộp hồ sơ Thạc sĩ 2026
+        </a>
+      </h3>
+      <p class="text-gray-600 text-sm mt-2">
+        <a href="https://hust.edu.vn/thong-tin-tuyen-sinh-cao-hoc" target="_blank" class="hover:text-red-600 transition">
+          Thông tin về thời gian và điều kiện tuyển sinh trình độ cao học...
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ITEM 3 -->
+  <div class="flex gap-4 hover:bg-gray-100 p-3 rounded-lg transition">
+    <div class="overflow-hidden rounded">
+      <img src="dai-hoc-bach-khoa-ha-noi-16702545378192091161245.WEBP"
+           class="w-40 h-28 object-cover transition duration-300 hover:scale-110">
+    </div>
+    <div>
+      <h3 class="font-bold text-lg">
+        <a href="https://hust.edu.vn/thong-tin-tuyen-sinh-chinh-quy-2026" target="_blank" class="hover:text-red-600 transition">
+          Thông tin tuyển sinh chính quy 2026
+        </a>
+      </h3>
+      <p class="text-gray-600 text-sm mt-2">
+        <a href="https://hust.edu.vn/chi-tieu-2026" target="_blank" class="hover:text-red-600 transition">
+          Tổng chỉ tiêu dự kiến gần 10.000 sinh viên năm 2026...
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ITEM 4 -->
+  <div class="flex gap-4 hover:bg-gray-100 p-3 rounded-lg transition">
+    <div class="overflow-hidden rounded">
+      <img src="d1bb2587e98451da0895.jpg"
+           class="w-40 h-28 object-cover transition duration-300 hover:scale-110">
+    </div>
+    <div>
+      <h3 class="font-bold text-lg">
+        <a href="https://ts.hust.edu.vn/tin-tuc/thong-bao-tuyen-sinh-trinh-do-thac-si-nam-2026" target="_blank" class="hover:text-red-600 transition">
+          Thông báo tuyển sinh Thạc sĩ 2026
+        </a>
+      </h3>
+      <p class="text-gray-600 text-sm mt-2">
+        <a href="https://hust.edu.vn/xet-tuyen-truc-tuyen" target="_blank" class="hover:text-red-600 transition">
+          Tuyển sinh dựa trên hồ sơ năng lực và xét tuyển trực tuyến...
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ITEM 5 -->
+  <div class="flex gap-4 hover:bg-gray-100 p-3 rounded-lg transition">
+    <div class="overflow-hidden rounded">
+      <img src="gen-n-z7492944935783_c764ea75bd25cf9f99be9f4504335182.jpg"
+           class="w-40 h-28 object-cover transition duration-300 hover:scale-110">
+    </div>
+    <div>
+      <h3 class="font-bold text-lg">
+        <a href="https://hust.edu.vn/thu-khoa-tsa-2026" target="_blank" class="hover:text-red-600 transition">
+          Thủ khoa TSA 2026 đạt 96,10 điểm
+        </a>
+      </h3>
+      <p class="text-gray-600 text-sm mt-2">
+        <a href="https://hust.edu.vn/ket-qua-danh-gia-tu-duy-2026" target="_blank" class="hover:text-red-600 transition">
+          Kết quả kỳ thi Đánh giá tư duy năm 2026 được công bố...
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ITEM 6 -->
+  <div class="flex gap-4 hover:bg-gray-100 p-3 rounded-lg transition">
+    <div class="overflow-hidden rounded">
+      <img src="bd8373d3bdd0058e5cc1.jpg"
+           class="w-40 h-28 object-cover transition duration-300 hover:scale-110">
+    </div>
+    <div>
+      <h3 class="font-bold text-lg">
+        <a href="https://hust.edu.vn/tuyen-sinh-tien-si-2026" target="_blank" class="hover:text-red-600 transition">
+          Thông báo tuyển sinh Tiến sĩ 2026
+        </a>
+      </h3>
+      <p class="text-gray-600 text-sm mt-2">
+        <a href="https://hust.edu.vn/dang-ky-xet-tuyen-online" target="_blank" class="hover:text-red-600 transition">
+          Hệ thống đăng ký xét tuyển trực tuyến mở trong tháng 3...
+        </a>
+      </p>
+    </div>
+  </div>
+
+</section>
+<!-- SCRIPT -->
+<script>
+function openLogin() {
+  document.getElementById("loginModal").classList.remove("hidden");
+}
+function closeLogin() {
+  document.getElementById("loginModal").classList.add("hidden");
+}
+
+function focusSearch() {
+  document.getElementById("searchInput").focus();
+}
+
+const suggestions = [
+  "Tuyển sinh 2026",
+  "Ngành Công nghệ thông tin",
+  "Học phí Bách Khoa",
+  "Điểm chuẩn",
+  "Học bổng",
+  "Ký túc xá"
+];
+
+function showSuggestions() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const box = document.getElementById("suggestBox");
+
+  let result = suggestions.filter(item =>
+    item.toLowerCase().includes(input)
+  );
+
+  if (result.length === 0) {
+    box.classList.add("hidden");
+    return;
+  }
+
+  box.innerHTML = result.map(item =>
+    `<div onclick="selectItem('${item}')" class="p-2 hover:bg-gray-200 cursor-pointer">${item}</div>`
+  ).join("");
+
+  box.classList.remove("hidden");
+}
+
+function selectItem(value) {
+  document.getElementById("searchInput").value = value;
+  document.getElementById("suggestBox").classList.add("hidden");
+}
+
+// click ngoài thì ẩn
+document.addEventListener("click", function(e) {
+  const box = document.getElementById("suggestBox");
+  const input = document.getElementById("searchInput");
+
+  if (!input.contains(e.target) && !box.contains(e.target)) {
+    box.classList.add("hidden");
+  }
+});
+</script>
+
+</body>
+<!-- THÔNG TIN NỔI BẬT PRO -->
+<section class="bg-gray-100 py-12 px-6 rounded-2xl max-w-6xl mx-auto mt-12 shadow-lg">
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-8 text-center">
+
+    <!-- ITEM -->
+    <div class="group p-4 rounded-xl transition duration-300 hover:bg-white hover:shadow-xl hover:-translate-y-2">
+      <div class="flex justify-center mb-3">
+        <svg class="w-12 h-12 text-black group-hover:text-red-600 transition" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2l2 4 4 .6-3 3 .7 4.4L12 12l-3.7 2 1-4.4-3-3 4-.6z"/>
+        </svg>
+      </div>
+      <p class="text-sm font-semibold text-gray-800 leading-relaxed">
+        BỐN NHÓM NGÀNH CỦA ĐHBK HÀ NỘI TĂNG HẠNG VÀO TOP 400 VÀ 500 THẾ GIỚI THEO XẾP HẠNG QS 2020
+      </p>
+    </div>
+
+    <!-- ITEM -->
+    <div class="group p-4 rounded-xl transition duration-300 hover:bg-white hover:shadow-xl hover:-translate-y-2">
+      <div class="flex justify-center mb-3">
+        <svg class="w-12 h-12 text-black group-hover:text-red-600 transition" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M9 2h6v2H9zm3 3a7 7 0 017 7c0 5-7 10-7 10S5 17 5 12a7 7 0 017-7z"/>
+        </svg>
+      </div>
+      <p class="text-sm font-semibold text-gray-800 leading-relaxed">
+        LĨNH VỰC KỸ THUẬT VÀ CÔNG NGHỆ BÁCH KHOA HÀ NỘI VÀO TOP 400 THẾ GIỚI
+      </p>
+    </div>
+
+    <!-- ITEM -->
+    <div class="group p-4 rounded-xl transition duration-300 hover:bg-white hover:shadow-xl hover:-translate-y-2">
+      <div class="flex justify-center mb-3">
+        <svg class="w-12 h-12 text-black group-hover:text-red-600 transition" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M16 11c1.7 0 3-1.3 3-3S17.7 5 16 5s-3 1.3-3 3 1.3 3 3 3zM8 11c1.7 0 3-1.3 3-3S9.7 5 8 5 5 6.3 5 8s1.3 3 3 3zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4zm8 0c-.3 0-.7 0-1 .1 1.3 1 2 2.3 2 3.9v2h7v-2c0-2.7-5.3-4-8-4z"/>
+        </svg>
+      </div>
+      <p class="text-sm font-semibold text-gray-800 leading-relaxed">
+        ĐỘI NGŨ GIẢNG VIÊN CHẤT LƯỢNG CAO, GIÀU CHUYÊN MÔN
+      </p>
+    </div>
+
+    <!-- ITEM -->
+    <div class="group p-4 rounded-xl transition duration-300 hover:bg-white hover:shadow-xl hover:-translate-y-2">
+      <div class="flex justify-center mb-3">
+        <svg class="w-12 h-12 text-black group-hover:text-red-600 transition" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2l4 7H8l4-7zm0 20c-4.4 0-8-3.6-8-8h2a6 6 0 0012 0h2c0 4.4-3.6 8-8 8z"/>
+        </svg>
+      </div>
+      <p class="text-sm font-semibold text-gray-800 leading-relaxed">
+        CƠ SỞ VẬT CHẤT THUỘC LOẠI TỐT NHẤT TRONG CÁC TRƯỜNG ĐẠI HỌC
+      </p>
+    </div>
+
+    <!-- ITEM -->
+    <div class="group p-4 rounded-xl transition duration-300 hover:bg-white hover:shadow-xl hover:-translate-y-2">
+      <div class="flex justify-center mb-3">
+        <svg class="w-12 h-12 text-black group-hover:text-red-600 transition" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 17.9V20h-2v-.1A8 8 0 014 12H3a9 9 0 0118 0h-1a8 8 0 01-7 7.9z"/>
+        </svg>
+      </div>
+      <p class="text-sm font-semibold text-gray-800 leading-relaxed">
+        TOP 801-1000 TRƯỜNG ĐẠI HỌC TỐT NHẤT THẾ GIỚI
+      </p>
+    </div>
+
+  </div>
+</section>
+<!-- FOOTER -->
+<footer class="bg-red-700 text-white relative mt-10">
+
+  <!-- Nội dung chính -->
+  <div class="max-w-6xl mx-auto px-6 py-10 grid md:grid-cols-2 gap-10">
+
+    <!-- Bên trái -->
+    <div class="space-y-4">
+      <div class="flex items-center gap-3">
+        <img src="images.png" class="w-12 h-12 object-contain">
+        <div>
+          <p class="font-bold">THÔNG TIN TUYỂN SINH</p>
+          <p class="font-bold">ĐẠI HỌC BÁCH KHOA HÀ NỘI</p>
+        </div>
+      </div>
+
+      <p>📍 Ban Tuyển sinh - Hướng Nghiệp, Phòng 101 tòa Nhà C1B, Đại học Bách khoa Hà Nội.</p>
+      <p>Số 1 Đại Cồ Việt, Phường Bạch Mai, Hà Nội</p>
+
+      <p>📞 Điện thoại hỗ trợ: (+84) 243.868.3408</p>
+      <p>✉ Email: tuyensinh@hust.edu.vn</p>
+    </div>
+
+    <!-- Bên phải -->
+    <!-- SOCIAL ICONS -->
+<div class="grid grid-cols-3 gap-6 text-center">
+
+  <!-- Facebook ĐH -->
+  <a href="https://www.facebook.com/tsdhbk" target="_blank" class="block">
+    <div class="w-12 h-12 bg-black hover:bg-yellow-300 rounded-full flex items-center justify-center mx-auto text-white hover:text-black transition duration-300 hover:shadow-lg hover:scale-110">
+      f
+    </div>
+    <p class="mt-2 text-sm">Facebook Tuyển sinh ĐH</p>
+  </a>
+
+  <!-- Facebook SĐH -->
+  <a href="https://www.facebook.com/groups/382077352336859" target="_blank" class="block">
+    <div class="w-12 h-12 bg-black hover:bg-yellow-300 rounded-full flex items-center justify-center mx-auto text-white hover:text-black transition duration-300 hover:shadow-lg hover:scale-110">
+      f
+    </div>
+    <p class="mt-2 text-sm">Facebook Tuyển sinh SĐH</p>
+  </a>
+
+  <!-- Group SV -->
+  <a href="https://www.facebook.com/groups/k70.2007dhbkhn/" target="_blank" class="block">
+    <div class="w-12 h-12 bg-black hover:bg-yellow-300 rounded-full flex items-center justify-center mx-auto text-white hover:text-black transition duration-300 hover:shadow-lg hover:scale-110">
+      f
+    </div>
+    <p class="mt-2 text-sm">Group Tân sinh viên</p>
+  </a>
+
+  <!-- TikTok -->
+  <a href="https://www.tiktok.com/@bachkhoahanoi_hust" target="_blank" class="block">
+    <div class="w-12 h-12 bg-black hover:bg-yellow-300 rounded-full flex items-center justify-center mx-auto text-white hover:text-black transition duration-300 hover:shadow-lg hover:scale-110">
+      🎵
+    </div>
+    <p class="mt-2 text-sm">Tiktok</p>
+  </a>
+
+  <!-- Group TSA -->
+  <a href="https://www.facebook.com/groups/kythidanhgiatuduy" target="_blank" class="block">
+    <div class="w-12 h-12 bg-black hover:bg-yellow-300 rounded-full flex items-center justify-center mx-auto text-white hover:text-black transition duration-300 hover:shadow-lg hover:scale-110">
+      f
+    </div>
+    <p class="mt-2 text-sm">Group Kỳ thi TSA</p>
+  </a>
+
+  <!-- YouTube -->
+  <a href="https://www.youtube.com/channel/UCNpChX3cVlpe-Lx5ukSlIaw" target="_blank" class="block">
+    <div class="w-12 h-12 bg-black hover:bg-yellow-300 rounded-full flex items-center justify-center mx-auto text-white hover:text-black transition duration-300 hover:shadow-lg hover:scale-110">
+      ▶
+    </div>
+    <p class="mt-2 text-sm">Youtube</p>
+  </a>
+
+</div>
+  <!-- Copyright -->
+  <div class="text-center py-4 border-t border-red-500 text-sm">
+    Copyright © Ban Tuyển sinh - Hướng nghiệp, Đại học Bách khoa Hà Nội
+  </div>
+
+</footer>
+</html>
